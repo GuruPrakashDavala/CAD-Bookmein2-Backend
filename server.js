@@ -67,7 +67,68 @@ app.get("/getallattendeesmessages/:attendeeID", (req, res) => {
   );
 });
 
+//Get all conversation between delegates and exhibior
+app.get("/getallexhibitorsanddelegatesconversation/:attendeeID", (req, res) => {
+  con.query(
+    "SELECT * FROM bookmein.exhibitor_conversation INNER JOIN bookmein.exhibitor_message ON exhibitor_conversation.id = exhibitor_message.conversationid WHERE delegateid = " +
+      req.params.attendeeID +
+      ";",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
 
+//Get attendee details
+app.get("/getattendeedetails/:attendeeID", (req, res) => {
+  con.query(
+    "SELECT id, first_name, last_name FROM bookmein.attendees where id = " +
+      req.params.attendeeID +
+      ";",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
+
+app.get("/geteventsattended", (req, res) => {
+  con.query(
+    "SELECT COUNT(" +
+      req.params.attendeeID +
+      ") FROM bookmein.attendee_session_tracking WHERE attendeeid =" +
+      req.params.attendeeID +
+      " GROUP BY eventid; ",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
+
+//popular sessions by total time spent
+app.get("/geteventsbytotaltimespent", (req, res) => {
+  con.query(
+    "SELECT eventid, COUNT(eventid) as totaltime FROM bookmein.attendee_session_tracking GROUP BY eventid ORDER BY totaltime DESC;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+      // console.log(result.length);
+    }
+  );
+});
+
+app.get("/totalevent", (req, res) => {
+  con.query(
+    "SELECT eventid from bookmein.attendee_session_tracking where eventid=3457;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+      console.log(result.length);
+    }
+  );
+});
 
 const port = 3000;
 app.listen(port);
