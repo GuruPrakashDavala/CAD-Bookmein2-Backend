@@ -143,5 +143,6 @@ app.get("/standsvisitedandduration", (req, res) => {
   );
 });
 
+//port number and listening on localhost 3000
 const port = 3000;
 app.listen(port);
