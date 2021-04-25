@@ -35,9 +35,22 @@ app.get("/", (req, res) => {
   res.send("Your API is working fine");
 });
 
+//popular sessions based on registrations
+
 app.get("/eventregistrations", (req, res) => {
   con.query(
-    "SELECT event_id, COUNT(*) as total_registrations FROM bookmein.registrations WHERE event_id IN (SELECT id FROM bookmein.events WHERE event_type = '86') GROUP BY event_id ORDER BY total_registrations DESC;",
+    "SELECT registrations.event_id, COUNT(registrations.event_id) as total_registrations, events.name FROM bookmein.registrations INNER JOIN bookmein.events ON registrations.event_id = events.id WHERE event_id IN (SELECT id FROM bookmein.events WHERE event_type = '86') GROUP BY event_id ORDER BY total_registrations DESC;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
+
+//popular sessions based on total time spent
+app.get("/geteventsbytotaltimespent", (req, res) => {
+  con.query(
+    "SELECT attendee_session_tracking.eventid, COUNT(attendee_session_tracking.eventid) as totaltime, events.name FROM bookmein.attendee_session_tracking  INNER JOIN bookmein.events ON attendee_session_tracking.eventid = events.id GROUP BY eventid  ORDER BY totaltime DESC;",
     function (err, result, fields) {
       if (err) throw err;
       res.send(result);
@@ -93,28 +106,14 @@ app.get("/getattendeedetails/:attendeeID", (req, res) => {
   );
 });
 
-app.get("/geteventsattended", (req, res) => {
+app.get("/getalleventsattendedbyattendee/:attendeeID", (req, res) => {
   con.query(
-    "SELECT COUNT(" +
+    "SELECT attendeeid,eventid, COUNT(attendeeid)/6 as totaltimespent from bookmein.attendee_session_tracking WHERE attendeeid = " +
       req.params.attendeeID +
-      ") FROM bookmein.attendee_session_tracking WHERE attendeeid =" +
-      req.params.attendeeID +
-      " GROUP BY eventid; ",
+      " GROUP BY eventid ORDER BY totaltimespent DESC; ",
     function (err, result, fields) {
       if (err) throw err;
       res.send(result);
-    }
-  );
-});
-
-//popular sessions by total time spent
-app.get("/geteventsbytotaltimespent", (req, res) => {
-  con.query(
-    "SELECT eventid, COUNT(eventid) as totaltime FROM bookmein.attendee_session_tracking GROUP BY eventid ORDER BY totaltime DESC;",
-    function (err, result, fields) {
-      if (err) throw err;
-      res.send(result);
-      // console.log(result.length);
     }
   );
 });
@@ -126,6 +125,50 @@ app.get("/totalevent", (req, res) => {
       if (err) throw err;
       res.send(result);
       console.log(result.length);
+    }
+  );
+});
+
+//Total registered
+app.get("/totalregistered", (req, res) => {
+  con.query(
+    "SELECT count(attendee_id) as totalregistrations FROM bookmein.registrations;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
+
+//Total Attended
+app.get("/totalattended", (req, res) => {
+  con.query(
+    "SELECT count(distinct attendeeid) as totalattended from bookmein.attendee_session_tracking;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
+
+//Total Attended grouped by event_id
+app.get("/attendeesgroupedbyeventid", (req, res) => {
+  con.query(
+    "SELECT count(distinctAttendees.attendeeid) AS totalAttended, distinctAttendees.eventid, events.name FROM (SELECT DISTINCT attendeeid, eventid FROM bookmein.attendee_session_tracking) distinctAttendees INNER JOIN bookmein.events ON distinctAttendees.eventid = events.id GROUP BY distinctAttendees.eventid ORDER BY totalAttended DESC;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
+    }
+  );
+});
+
+//Stands visited and duration
+app.get("/standsvisitedandduration", (req, res) => {
+  con.query(
+    "SELECT eventid, COUNT(eventid) AS totaltime, events.name FROM bookmein.stand_attendance INNER JOIN bookmein.events ON stand_attendance.eventid = events.id WHERE eventid IN (SELECT id from bookmein.events where event_type = 87) GROUP BY eventid;",
+    function (err, result, fields) {
+      if (err) throw err;
+      res.send(result);
     }
   );
 });
