@@ -26,5 +26,5 @@ $ cd bookmeIn2-backend
 $ npm install
 
 #Start's development server
-$ npm server.js
+$ node server.js
 ```
