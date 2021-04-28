@@ -1,4 +1,4 @@
-# CAD-BookmeIn2-BACKEND APP
+# CAD-BookmeIn2-Backend App
 
 ## Getting Started
 
