@@ -17,7 +17,7 @@ From your command line, clone and run developerFolio:
 
 ```bash
 # Clone this repository
-$ git clone https://github.com/GuruPrakashDavala/CAD-Bookmein2
+$ git clone https://github.com/GuruPrakashDavala/CAD-Bookmein2-Backend
 
 # Go into the repository
 $ cd bookmeIn2-backend
