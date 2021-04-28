@@ -73,7 +73,7 @@ app.get("/getallexhibitorsanddelegatesconversation/:attendeeID", (req, res) => {
   );
 });
 
-//API to get single attendee detail based on the route param
+//API to get single attendee details based on the route param
 app.get("/getattendeedetails/:attendeeID", (req, res) => {
   con.query(
     "SELECT id, first_name, last_name FROM bookmein.attendees where id = " +
@@ -132,7 +132,7 @@ app.get("/attendeesgroupedbyeventid", (req, res) => {
   );
 });
 
-//APi to get total stands visited and duration spent
+//API to get total stands visited and duration spent
 app.get("/standsvisitedandduration", (req, res) => {
   con.query(
     "SELECT eventid, COUNT(eventid) AS totaltime, events.name FROM bookmein.stand_attendance INNER JOIN bookmein.events ON stand_attendance.eventid = events.id WHERE eventid IN (SELECT id from bookmein.events where event_type = 87) GROUP BY eventid;",
