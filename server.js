@@ -4,6 +4,7 @@ const mysql = require("mysql");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
+//Connection String
 const con = mysql.createConnection({
   host: "localhost",
   user: "root",
